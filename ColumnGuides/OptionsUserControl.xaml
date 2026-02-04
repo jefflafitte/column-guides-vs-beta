@@ -1,0 +1,431 @@
+﻿<UserControl x:Class="ColumnGuides.OptionsUserControl"
+             xmlns:ColumnGuidesOptions="clr-namespace:ColumnGuidesOptions;assembly=ColumnGuidesOptions"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ColumnGuides"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             mc:Ignorable="d"
+             d:DesignHeight="338" d:DesignWidth="461">
+
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <!-- Always select all text when a TextBox comes into focus. -->
+            <Setter Property="local:SelectAllOnFocusBehavior.SelectAllOnFocus" Value="True"/>
+        </Style>
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Grid.IsSharedSizeScope="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="12"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <!-- File Types and Settings -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <!-- File Types -->
+            <GroupBox Grid.Row="0" Header="File Types">
+                <Grid Margin="9,5,9,9">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="9"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="14"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- File Types List                       -->
+                    <!-- Height is bound to guides list height.-->
+                    <ListBox Grid.Row="0" Height="{Binding ElementName=guidesListView, Path=ActualHeight, Mode=OneWay}" ItemsSource="{Binding AssociationVms}" d:ItemsSource="{d:SampleData ItemCount=5}" SelectedItem="{Binding SelectedAssociationVm}" SelectionChanged="List_SelectionChanged">
+                        <ListBox.Style>
+                            <Style TargetType="ListBox">
+                                <Setter Property="IsEnabled" Value="True"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AssociationVms.Count}" Value="0">
+                                        <Setter Property="IsEnabled" Value="False" d:Value="True"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.Style>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0" Margin="0,0,4,0">
+                                        <CheckBox x:Name="associationEnabledCheckBox" IsChecked="{Binding Enabled}">
+                                            <CheckBox.Style>
+                                                <Style TargetType="CheckBox">
+                                                    <Setter Property="ToolTip" Value="Select to enable guides associated with the file types."/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=associationEnabledCheckBox, Path=IsChecked}" Value="True">
+                                                            <Setter Property="ToolTip" Value="Unselect to disable guides associated with the file types."/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </CheckBox.Style>
+                                        </CheckBox>
+                                    </Grid>
+                                    <TextBlock Grid.Column="1" Text="{Binding FileTypes}" d:Text="M"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!-- File Types Buttons -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Command="{Binding AddFileTypesCommand}" Content="Add" Height="23" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75"/>
+                        <Button Command="{Binding RemoveFileTypesCommand}" Content="Remove" Grid.Column="2" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75"/>
+                        <StackPanel Grid.Column="5" HorizontalAlignment="Right">
+                            <Button Command="{Binding MoveFileTypesUpCommand}" Content="▲" FontSize="6" Height="12" VerticalAlignment="Top" Width="20"/>
+                            <Button Command="{Binding MoveFileTypesDownCommand}" Content="▼" FontSize="6" Height="12" Margin="0,-1,0,0" VerticalAlignment="Top" Width="20"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- File Types Properties -->
+                    <Grid Grid.Row="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Style.Triggers>
+                                        <!-- Disable file types properties when no file types is selected. -->
+                                        <DataTrigger Binding="{Binding SelectedAssociationVm}" Value="{x:Null}">
+                                            <Setter Property="IsEnabled" Value="False" d:Value="True"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- File Types -->
+                            <Label Content="File types:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TextBox DataObject.Pasting="FileTypes_Pasting" Grid.Column="2" LostFocus="TextBox_LostFocus" MaxLength="{Binding Source={x:Static ColumnGuidesOptions:DefaultSettings.Instance}, Path=MaxAssociationFileTypesLength, Mode=OneTime}" PreviewTextInput="FileTypes_PreviewTextInput" Text="{Binding SelectedAssociationVm.FileTypes}" d:Text="*.*" TextWrapping="NoWrap" ToolTip="Use wildcard patterns separated by semicolons." VerticalAlignment="Center"/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+
+            <!-- Settings -->
+            <GroupBox Grid.Row="1" Header="Settings">
+                <Grid Margin="9,5,9,9">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="9"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="16"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="7"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <CheckBox x:Name="showGuidesCheckBox" Content="Show guides" Grid.Row="1" HorizontalAlignment="Left" IsChecked="{Binding ShowGuides}">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox">
+                                <Setter Property="ToolTip" Value="Select to show guides."/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=showGuidesCheckBox, Path=IsChecked}" Value="True">
+                                        <Setter Property="ToolTip" Value="Clear to hide guides."/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                    <CheckBox x:Name="dashesStickToPageCheckBox" Content="Dashes stick to page" Grid.Row="3" HorizontalAlignment="Left" IsChecked="{Binding StickToPage}" VerticalAlignment="Top">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox">
+                                <Setter Property="ToolTip" Value="Select to make dashed guides scroll with the page below text."/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=dashesStickToPageCheckBox, Path=IsChecked}" Value="True">
+                                        <Setter Property="ToolTip" Value="Clear to make dashed guides float between the page and text."/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                    <CheckBox x:Name="sharpGuidesCheckBox" Content="Sharp guides" Grid.Row="5" HorizontalAlignment="Left" IsChecked="{Binding SnapToPixels}" VerticalAlignment="Top">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox">
+                                <Setter Property="ToolTip" Value="Select to make guides snap to screen pixels and mimimize anti-aliasing visual artifacts."/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=sharpGuidesCheckBox, Path=IsChecked}" Value="True">
+                                        <Setter Property="ToolTip" Value="Clear to disable snapping to screen pixels. (May cause anti-aliasing visual artifacts.)"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+                </Grid>
+            </GroupBox>
+        </Grid>
+
+        <!-- Guides -->
+        <GroupBox Grid.Column="2" Header="Guides">
+            <GroupBox.Style>
+                <Style TargetType="GroupBox">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedAssociationVm}" Value="{x:Null}">
+                            <!-- Disable guides group when no file types is selected. -->
+                            <Setter Property="IsEnabled" Value="False" d:Value="True"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </GroupBox.Style>
+            <Grid Margin="9,5,9,9">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="9"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="14"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Guides List -->
+                <ListView x:Name="guidesListView" Grid.Row="0" ItemsSource="{Binding SelectedAssociationVm.GuideVms}" d:ItemsSource="{d:SampleData ItemCount=4}" SelectedItem="{Binding SelectedGuideVm}" SelectionChanged="List_SelectionChanged" SelectionMode="Single">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.ColumnHeaderContainerStyle>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="IsHitTestVisible" Value="False"/>
+                                </Style>
+                            </GridView.ColumnHeaderContainerStyle>
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox x:Name="guideVisibleCheckBox" IsChecked="{Binding Visible}">
+                                            <CheckBox.Style>
+                                                <Style TargetType="CheckBox">
+                                                    <Setter Property="ToolTip" Value="Select to show guide."/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=guideVisibleCheckBox, Path=IsChecked}" Value="True">
+                                                            <Setter Property="ToolTip" Value="Unselect to hide guide."/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </CheckBox.Style>
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Width="48">
+                                <GridViewColumnHeader>
+                                    <TextBlock Text="Column"/>
+                                </GridViewColumnHeader>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding Column}" d:Text="000"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Guide" Width="Auto">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <TextBlock/>
+                                            <Line Height="Auto" StrokeDashArray="{Binding Dashes}" StrokeThickness="{Binding Width}" d:StrokeThickness="1" VerticalAlignment="Center" X1="0" X2="62" Y1="0" Y2="0">
+                                                <d:Line.Stroke>
+                                                    <SolidColorBrush Color="Magenta"/>
+                                                </d:Line.Stroke>
+                                                <Line.Stroke>
+                                                    <SolidColorBrush Color="{Binding Color}"/>
+                                                </Line.Stroke>
+                                            </Line>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <!-- Guides Buttons -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Command="{Binding AddGuideCommand}" Content="Add" Height="23" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75"/>
+                    <Button Command="{Binding RemoveGuideCommand}" Content="Remove" Grid.Column="2" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75"/>
+                    <StackPanel Grid.Column="5" HorizontalAlignment="Right">
+                        <Button Command="{Binding MoveGuideUpCommand}" Content="▲" FontSize="6" Height="12" VerticalAlignment="Top" Width="20"/>
+                        <Button Command="{Binding MoveGuideDownCommand}" Content="▼" FontSize="6" Height="12" Margin="0,-1,0,0" VerticalAlignment="Top" Width="20"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Guides Properties -->
+                <Grid Grid.Row="4">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedGuideVm}" Value="{x:Null}">
+                                    <!-- Disable guides group when no file types is selected. -->
+                                    <Setter Property="IsEnabled" Value="False" d:Value="True"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="1"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Column -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="guidePropertyLabels" Width="Auto"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Column:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <TextBox DataObject.Pasting="Column_Pasting" Grid.Column="2" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Column_PreviewTextInput" Text="{Binding SelectedGuideVm.Column}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                    </Grid>
+
+                    <!-- Color -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="guidePropertyLabels" Width="Auto"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="Color:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Grid Grid.Column="2" HorizontalAlignment="Left" Width="Auto">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="0" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Red}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                            <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="2" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Green}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                            <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="4" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Blue}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                            <Button Background="White" Command="{Binding ChooseColorCommand}" Grid.Column="6" Height="19" Width="19">
+                                <Button.Content>
+                                    <Rectangle Height="16" SnapsToDevicePixels="True" Width="16">
+                                        <Rectangle.Fill>
+                                            <SolidColorBrush Color="{Binding SelectedGuideVm.Color}" d:Color="Magenta"/>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Color Labels -->
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="guidePropertyLabels" Width="Auto"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="2" HorizontalAlignment="Left" Width="Auto">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="R" Grid.Column="0" HorizontalContentAlignment="Center" Margin="0,-5,0,0" Padding="0" VerticalAlignment="Top" Width="26"/>
+                            <Label Content="G" Grid.Column="2" HorizontalContentAlignment="Center" Margin="0,-5,0,0" Padding="0" VerticalAlignment="Top" Width="26"/>
+                            <Label Content="B" Grid.Column="4" HorizontalContentAlignment="Center" Margin="0,-5,0,0" Padding="0" VerticalAlignment="Top" Width="26"/>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Opacity -->
+                    <Grid Grid.Row="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="guidePropertyLabels" Width="Auto"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="86"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Opacity:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="2" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Alpha}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                        <Slider d:Value="255" AutoToolTipPlacement="TopLeft" Grid.Column="4" HorizontalAlignment="Stretch" LargeChange="10" Maximum="255" Minimum="0" SmallChange="1" Value="{Binding SelectedGuideVm.Alpha}" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Width -->
+                    <Grid Grid.Row="7">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="guidePropertyLabels" Width="Auto"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Width:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <ComboBox Grid.Column="2" HorizontalAlignment="Left" ItemsSource="{Binding Source={x:Static ColumnGuidesOptions:GuideViewModel.PredefinedWidths}}" SelectedItem="{Binding SelectedGuideVm.Width, FallbackValue={x:Static ColumnGuidesOptions:GuideViewModel.DefaultPredefinedWidth}}" VerticalAlignment="Center">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <TextBlock/>
+                                        <Line Height="Auto" Stroke="Black" StrokeThickness="{Binding}" VerticalAlignment="Center" X1="0" X2="62" Y1="0" Y2="0"></Line>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+
+                    <!-- Dashes -->
+                    <Grid Grid.Row="9">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="guidePropertyLabels" Width="Auto"/>
+                            <ColumnDefinition Width="6"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Dashes:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <ComboBox Grid.Column="2" HorizontalAlignment="Left" ItemsSource="{Binding Source={x:Static ColumnGuidesOptions:GuideViewModel.PredefinedDashes}}" SelectedItem="{Binding SelectedGuideVm.Dashes, FallbackValue={x:Static ColumnGuidesOptions:GuideViewModel.DefaultPredefinedDashes}}" VerticalAlignment="Center">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <TextBlock/>
+                                        <Line Height="Auto" Stroke="Black" StrokeDashArray="{Binding}" StrokeThickness="1" VerticalAlignment="Center" X1="0" X2="62" Y1="0" Y2="0"></Line>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>
