@@ -145,12 +145,7 @@ namespace ColumnGuides
 			OptionsChanged?.Invoke(this, EventArgs.Empty);
 		}
 
-		private void InitializeFromDefaults() => _options = new Options
-		{
-			ShowGuides = DefaultSettings.Instance.ShowGuides,
-			StickToPage = DefaultSettings.Instance.StickToPage,
-			SnapToPixels = DefaultSettings.Instance.SnapToPixels
-		};
+		private void InitializeFromDefaults() => _options = DefaultSettings.Instance.InitialOptions.Clone();
 
 		private bool LoadFromJson(string json)
 		{

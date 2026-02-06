@@ -22,6 +22,12 @@ namespace ColumnGuidesOptions
 {
 	public sealed class DefaultSettings
 	{
+		private const string FactoryDefaultFileTypes = "*.*";
+		private const int FactoryDefaultGuideColumn = 80;
+		private const int FactoryDefaultGuideWidth = 1;
+
+		private static readonly Color FactoryDefaultGuideColor = Colors.Gray;
+
 		private static DefaultSettings _instance;
 
 		private int[] _predefinedGuideWidths = [1, 2, 3];
@@ -35,11 +41,24 @@ namespace ColumnGuidesOptions
 
 		public static DefaultSettings Instance => _instance ??= (InitialzeFromSettings() ?? new());
 
-		public bool ShowGuides { get; set; } = true;
-
-		public bool StickToPage { get; set; } = true;
-
-		public bool SnapToPixels { get; set; } = true;
+		public Options InitialOptions { get; set; } = new Options
+		{
+			ShowGuides = true,
+			StickToPage = true,
+			SnapToPixels = true,
+			Associations = [new FileTypesAssociation
+			{
+				Enabled = true,
+				FileTypes = FactoryDefaultFileTypes,
+				Guides = [new Guide
+				{
+					Visible = true,
+					Column = FactoryDefaultGuideColumn,
+					Color = FactoryDefaultGuideColor,
+					Width = FactoryDefaultGuideWidth
+				}]
+			}]
+		};
 
 		public int MaxAssociationCount { get; set; } = 64;
 
@@ -47,7 +66,7 @@ namespace ColumnGuidesOptions
 
 		public int MaxAssociationFileTypesLength { get; set; } = 64;
 
-		public string NewAssociationFileTypes { get; set; } = "*.*";
+		public string NewAssociationFileTypes { get; set; } = FactoryDefaultFileTypes;
 
 		public bool NewAssociationAddGuide {  get; set; } = true;
 
@@ -57,11 +76,11 @@ namespace ColumnGuidesOptions
 
 		public int MaxGuideColumn { get; set; } = 999;
 
-		public int NewGuideColumn { get; set; } = 80;
+		public int NewGuideColumn { get; set; } = FactoryDefaultGuideColumn;
 
-		public System.Drawing.Color NewGuideColor { get; set; } = System.Drawing.Color.Gray;
+		public Color NewGuideColor { get; set; } = FactoryDefaultGuideColor;
 
-		public int NewGuideWidth { get; set; } = 1;
+		public int NewGuideWidth { get; set; } = FactoryDefaultGuideWidth;
 
 		public int[] PredefinedGuideWidths
 		{

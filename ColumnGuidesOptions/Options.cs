@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ColumnGuidesOptions
 {
@@ -41,5 +42,14 @@ namespace ColumnGuidesOptions
 
 			set => _customColors = value;
 		}
+
+		public Options Clone() => new Options
+		{
+			ShowGuides = ShowGuides,
+			StickToPage = StickToPage,
+			SnapToPixels = SnapToPixels,
+			Associations = Associations.Select(x => x.Clone()).ToList(),
+			CustomColors = CustomColors
+		};
 	}
 }

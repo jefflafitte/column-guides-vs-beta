@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.VisualStudio.Shell.Interop;
+using System.Linq;
 using System.Windows.Media;
 
 namespace ColumnGuidesOptions
@@ -34,5 +36,14 @@ namespace ColumnGuidesOptions
 
 			set => _dashes = value;
 		}
+
+		public Guide Clone() => new Guide
+		{
+			Visible = Visible,
+			Column = Column,
+			Color = Color,
+			Width = Width,
+			Dashes = Dashes.Clone()
+		};
 	}
 }

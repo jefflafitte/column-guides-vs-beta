@@ -273,11 +273,7 @@ namespace ColumnGuidesOptions
 				{
 					Visible = DefaultSettings.Instance.NewGuideVisible,
 					Column = DefaultSettings.Instance.NewGuideColumn,
-					Color = Color.FromArgb(
-						DefaultSettings.Instance.NewGuideColor.A,
-						DefaultSettings.Instance.NewGuideColor.R,
-						DefaultSettings.Instance.NewGuideColor.G,
-						DefaultSettings.Instance.NewGuideColor.B),
+					Color = DefaultSettings.Instance.NewGuideColor,
 					Width = DefaultSettings.Instance.NewGuideWidth
 				});
 

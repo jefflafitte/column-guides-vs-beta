@@ -67,6 +67,13 @@ namespace ColumnGuidesOptions
 			set => _guides = value;
 		}
 
+		public FileTypesAssociation Clone() => new FileTypesAssociation
+		{
+			Enabled = Enabled,
+			FileTypes = FileTypes,
+			Guides = Guides.Select(x => x.Clone()).ToList()
+		};
+
 		public bool Matches(string fileName) => _matcher?.Match(fileName).HasMatches ?? false;
 	}
 }
