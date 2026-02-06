@@ -40,7 +40,7 @@ namespace ColumnGuidesOptions
 				}
 				catch (Exception ex)
 				{
-					ActivityLog.TryLogWarning("ColumnGuides", $"Failed to load options: {ex.Message}");
+					ActivityLog.TryLogWarning("ColumnGuides", $"Failed to read options from JSON: {ex.Message}");
 				}
 			}
 			else

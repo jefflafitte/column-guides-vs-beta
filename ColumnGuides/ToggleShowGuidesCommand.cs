@@ -57,7 +57,7 @@ namespace ColumnGuides
 		{
 			_optionsViewModel.ShowGuides = _showGuides;
 
-			_optionsService.SaveOptionsToStorage();
+			_optionsService.SaveToStorage();
 		}
 
 		private void OnBeforeQueryStatus(object sender, EventArgs e) => SetMenuItemVisibility();

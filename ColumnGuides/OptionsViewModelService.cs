@@ -41,10 +41,10 @@ namespace ColumnGuides
 
 			WeakEventManager<IOptionsService, EventArgs>.AddHandler(
 				_optionsService,
-				nameof(IOptionsService.OptionsLoaded),
-				OnOptionsLoaded);
+				nameof(IOptionsService.OptionsChanged),
+				OnOptionsChanged);
 		}
 
-		private void OnOptionsLoaded(object sender, EventArgs e) => OptionsViewModel.Options = _optionsService.Options;
+		private void OnOptionsChanged(object sender, EventArgs e) => OptionsViewModel.Options = _optionsService.Options;
 	}
 }

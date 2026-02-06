@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Shell.Interop;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -47,14 +48,25 @@ namespace ColumnGuides
 			UserControl.DataContext = OptionsViewModelService.OptionsViewModel;
 		}
 
-		public override void LoadSettingsFromStorage() => OptionsService.LoadOptionsFromStorage();
+		public override void LoadSettingsFromStorage() => OptionsService.LoadFromStorage();
+
+		public override void LoadSettingsFromXml(IVsSettingsReader reader) => OptionsService.LoadFromXml(reader);
 
 		public override void SaveSettingsToStorage()
 		{
 			UpdateBindings(UserControl);
 
-			OptionsService.SaveOptionsToStorage();
+			OptionsService.SaveToStorage();
 		}
+
+		public override void SaveSettingsToXml(IVsSettingsWriter writer)
+		{
+			UpdateBindings(UserControl);
+
+			OptionsService.SaveToXml(writer);
+		}
+
+		public override void ResetSettings() => OptionsService.Reset();
 
 		private void UpdateBindings(DependencyObject parent)
 		{

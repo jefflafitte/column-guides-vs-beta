@@ -30,6 +30,7 @@ namespace ColumnGuides
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideOptionPage(typeof(OptionsDialogPage), "Column Guides", "General", 0, 0, true)]
 	[ProvideMenuResource("Menus.ctmenu", 1)]
+	[ProvideProfile(typeof(OptionsDialogPage), "ColumnGuides", "Options", 1, 2, isToolsOptionPage: true, DescriptionResourceID = 3)]
 	internal sealed class ColumnGuidesPackage : AsyncPackage
 	{
 		private static readonly Guid guidColumnGuidesCmdSet = new("dce540bc-103c-442d-a277-974a3368e660");
@@ -62,7 +63,7 @@ namespace ColumnGuides
 
 			Assumes.Present(optionsViewModelService);
 
-			optionsService.LoadOptionsFromStorage();
+			optionsService.LoadFromStorage();
 
 			new ToggleShowGuidesCommand(
 				guidColumnGuidesCmdSet,
