@@ -425,9 +425,7 @@ namespace ColumnGuides
 			}
 			else
 			{
-				_layer.RemoveAllAdornments();
-
-				_associationLines.Clear();
+				ClearLines();
 			}
 		}
 
@@ -449,6 +447,8 @@ namespace ColumnGuides
 
 		private void OnSnapToPixelsChanged()
 		{
+			_layer.RemoveAllAdornments();
+
 			foreach (var associationLines in _associationLines)
 			{
 				Debug.Assert(associationLines is not null);
@@ -458,8 +458,6 @@ namespace ColumnGuides
 					Debug.Assert(line is not null);
 
 					line.SnapsToDevicePixels = _optionsVm.SnapToPixels;
-
-					_layer.RemoveAdornment(line);
 
 					AddAdornment(line);
 				}

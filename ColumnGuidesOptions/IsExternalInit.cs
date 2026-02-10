@@ -12,36 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Windows.Media;
-
-namespace ColumnGuidesOptions
+namespace System.Runtime.CompilerServices
 {
-	public sealed class Guide
-	{
-		private DoubleCollection _dashes;
-
-		public bool Visible { get; set; } = false;
-
-		public int Column { get; set; } = 0;
-
-		public Color Color { get; set; } = System.Windows.Media.Colors.Black;
-
-		public int Width { get; set; } = 1;
-
-		public DoubleCollection Dashes
-		{
-			get => _dashes ??= [];
-
-			set => _dashes = value;
-		}
-
-		public Guide Clone() => new Guide
-		{
-			Visible = Visible,
-			Column = Column,
-			Color = Color,
-			Width = Width,
-			Dashes = Dashes.Clone()
-		};
-	}
+	internal static class IsExternalInit { }
 }

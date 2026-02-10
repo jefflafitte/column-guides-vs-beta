@@ -39,6 +39,17 @@ namespace ColumnGuidesOptions
 					_fileTypes = value;
 
 					_matcher = null;
+				}
+			}
+		}
+
+		private Matcher Matcher
+		{
+			get
+			{
+				if (_matcher is null)
+				{
+					_matcher = new();
 
 					if (!string.IsNullOrEmpty(_fileTypes))
 					{
@@ -48,8 +59,6 @@ namespace ColumnGuidesOptions
 
 						if (fileTypes.Any())
 						{
-							_matcher = new();
-
 							foreach (var fileType in fileTypes)
 							{
 								_matcher.AddInclude(fileType);
@@ -57,6 +66,8 @@ namespace ColumnGuidesOptions
 						}
 					}
 				}
+
+				return _matcher;
 			}
 		}
 
@@ -74,6 +85,6 @@ namespace ColumnGuidesOptions
 			Guides = Guides.Select(x => x.Clone()).ToList()
 		};
 
-		public bool Matches(string fileName) => _matcher?.Match(fileName).HasMatches ?? false;
+		public bool Matches(string fileName) => Matcher?.Match(fileName).HasMatches ?? false;
 	}
 }

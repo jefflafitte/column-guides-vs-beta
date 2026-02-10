@@ -158,6 +158,6 @@ namespace ColumnGuides
 			{
 				binding.UpdateTarget();
 			}
-        }
-    }
+		}
+	}
 }

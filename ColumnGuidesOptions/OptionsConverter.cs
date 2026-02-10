@@ -56,7 +56,7 @@ namespace ColumnGuidesOptions
 			CultureInfo culture,
 			object value,
 			Type destinationType) =>
-			((value as Options is var options) && (destinationType == typeof(string))) ?
+			((value is Options options) && (destinationType == typeof(string))) ?
 				JsonSerializer.Serialize(options) : base.ConvertTo(context, culture, value, destinationType);
 	}
 }

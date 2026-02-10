@@ -49,7 +49,7 @@ namespace ColumnGuidesOptions
 			StickToPage = StickToPage,
 			SnapToPixels = SnapToPixels,
 			Associations = Associations.Select(x => x.Clone()).ToList(),
-			CustomColors = CustomColors
+			CustomColors = CustomColors.ToArray()
 		};
 	}
 }

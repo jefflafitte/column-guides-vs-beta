@@ -20,7 +20,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Media;
 
 namespace ColumnGuidesOptions
 {
@@ -147,12 +146,14 @@ namespace ColumnGuidesOptions
 		[RelayCommand(CanExecute = nameof(CanExecuteAddFileTypes))]
 		private void AddFileTypes()
 		{
+			var settings = DefaultSettings.Instance;
+
 			var associationVm = new FileTypesAssociationViewModel(
 				(SelectedAssociationVm is not null) ? (SelectedAssociationVm.Index + 1) : AssociationVms.Count,
 				new FileTypesAssociation
 				{
-					Enabled = DefaultSettings.Instance.NewAssociationEnabled,
-					FileTypes = DefaultSettings.Instance.NewAssociationFileTypes
+					Enabled = settings.NewAssociationEnabled,
+					FileTypes = settings.NewAssociationFileTypes
 				});
 
 			associationVm.PropertyChanged += OnAssociationPropertyChanged;
@@ -173,7 +174,7 @@ namespace ColumnGuidesOptions
 
 			SelectedAssociationVm = associationVm;
 
-			if (DefaultSettings.Instance.NewAssociationAddGuide)
+			if (settings.NewAssociationAddGuide)
 			{
 				AddGuide();
 			}
@@ -267,14 +268,16 @@ namespace ColumnGuidesOptions
 		{
 			Debug.Assert(CanExecuteAddGuide());
 
+			var settings = DefaultSettings.Instance;
+
 			var guideVm = new GuideViewModel(
 				(SelectedGuideVm is not null) ? (SelectedGuideVm.Index + 1) : SelectedAssociationVm.GuideVms.Count,
 				new Guide
 				{
-					Visible = DefaultSettings.Instance.NewGuideVisible,
-					Column = DefaultSettings.Instance.NewGuideColumn,
-					Color = DefaultSettings.Instance.NewGuideColor,
-					Width = DefaultSettings.Instance.NewGuideWidth
+					Visible = settings.NewGuideVisible,
+					Column = settings.NewGuideColumn,
+					Color = settings.NewGuideColor,
+					Width = settings.NewGuideWidth
 				});
 
 			SelectedAssociationVm.Association.Guides.Insert(guideVm.Index, guideVm.Guide);
@@ -391,7 +394,7 @@ namespace ColumnGuidesOptions
 		{
 			Debug.Assert(CanExecuteChooseColor());
 
-			var colorDialog = new ColorDialog
+			using var colorDialog = new ColorDialog
 			{
 				AllowFullOpen = true,
 				Color = SelectedGuideVm.GetRgbAsSystemDrawingColor(),

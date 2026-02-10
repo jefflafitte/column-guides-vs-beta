@@ -19,7 +19,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Settings;
 using System;
 using System.ComponentModel.Composition;
-using System.Windows.Markup;
 
 namespace ColumnGuides
 {
@@ -52,7 +51,15 @@ namespace ColumnGuides
 
 		private Options _options;
 
+		private ShellSettingsManager _shellSettingsManager;
+		private OptionsConverter _optionsConverter;
+
 		public Options Options => _options;
+
+		private ShellSettingsManager ShellSettingsManager =>
+			_shellSettingsManager ??= new ShellSettingsManager(ServiceProvider.GlobalProvider);
+
+		private OptionsConverter OptionsConverter => _optionsConverter ??= new();
 
 		public OptionsService() => InitializeFromDefaults();
 
@@ -60,9 +67,7 @@ namespace ColumnGuides
 		{
 			ThreadHelper.ThrowIfNotOnUIThread();
 
-			var manager = new ShellSettingsManager(ServiceProvider.GlobalProvider);
-
-			var store = manager.GetReadOnlySettingsStore(SettingsScope.UserSettings);
+			var store = ShellSettingsManager.GetReadOnlySettingsStore(SettingsScope.UserSettings);
 
 			if (!store.PropertyExists(StorageCollectionPath, StoragePropertyName))
 			{
@@ -104,9 +109,7 @@ namespace ColumnGuides
 		{
 			ThreadHelper.ThrowIfNotOnUIThread();
 
-			var manager = new ShellSettingsManager(ServiceProvider.GlobalProvider);
-
-			var store = manager.GetWritableSettingsStore(SettingsScope.UserSettings);
+			var store = ShellSettingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
 
 			if (!store.CollectionExists(StorageCollectionPath))
 			{
@@ -149,8 +152,7 @@ namespace ColumnGuides
 
 		private bool LoadFromJson(string json)
 		{
-			if (!string.IsNullOrEmpty(json) &&
-				(new OptionsConverter().ConvertFromString(json) is Options loadedOptions))
+			if (!string.IsNullOrEmpty(json) && (OptionsConverter.ConvertFromString(json) is Options loadedOptions))
 			{
 				_options = loadedOptions;
 
@@ -160,7 +162,7 @@ namespace ColumnGuides
 			return false;
 		}
 
-		private string SaveToJson() => ((new OptionsConverter().ConvertToString(_options) is string json) &&
+		private string SaveToJson() => ((OptionsConverter.ConvertToString(_options) is string json) &&
 			!string.IsNullOrEmpty(json)) ? json : null;
 	}
 }

@@ -80,7 +80,7 @@ namespace ColumnGuides
 		private readonly IClassificationFormatMap _formatMap;
 		private double? _width = null;
 
-		public double Width => _width ??= CalculateWidth();
+		public double Width => _width ??= CalculateWidth() ?? 0;
 
 		public TextViewColumnWidth(IWpfTextView view, IClassificationFormatMap formatMap)
 		{
@@ -102,41 +102,48 @@ namespace ColumnGuides
 
 		private void OnFormatMappingChanged(object sender, EventArgs e) => _width = null;
 
-		private double CalculateWidth()
+		private double? CalculateWidth()
 		{
-			var width = _view.FormattedLineSource.ColumnWidth;
+			double? width = null;
 
-			if (_view.FormattedLineSource.DefaultTextProperties.Typeface.TryGetGlyphTypeface(out var glyphTypeface))
+			if (_view.FormattedLineSource is not null)
 			{
-				var glyphIndex1 = glyphTypeface.CharacterToGlyphMap[DefaultSettings.Instance.MonospaceTestCharacter1];
-				var glyphIndex2 = glyphTypeface.CharacterToGlyphMap[DefaultSettings.Instance.MonospaceTestCharacter2];
+				width = _view.FormattedLineSource.ColumnWidth;
 
-				var width1 = glyphTypeface.AdvanceWidths[glyphIndex1];
-				var width2 = glyphTypeface.AdvanceWidths[glyphIndex2];
-
-				if (Math.Abs(width1 - width2) >= MonospaceComparisonThreshold)
+				if (_view.FormattedLineSource.DefaultTextProperties.Typeface.TryGetGlyphTypeface(out var glyphTypeface))
 				{
-					var textFormatter = TextFormatter.Create(TextFormattingMode.Display);
+					var settings = DefaultSettings.Instance;
 
-					var textSource = new ColumnTextSource(_view.FormattedLineSource.DefaultTextProperties);
+					var glyphIndex1 = glyphTypeface.CharacterToGlyphMap[settings.MonospaceTestCharacter1];
+					var glyphIndex2 = glyphTypeface.CharacterToGlyphMap[settings.MonospaceTestCharacter2];
 
-					var paragraphProperties = new ColumnParagraphProperties(
-						_view.FormattedLineSource.DefaultTextProperties);
+					var width1 = glyphTypeface.AdvanceWidths[glyphIndex1];
+					var width2 = glyphTypeface.AdvanceWidths[glyphIndex2];
 
-					var maxParagraphWidth = textFormatter.FormatMinMaxParagraphWidth(
-						textSource,
-						0,
-						paragraphProperties).MaxWidth;
+					if (Math.Abs(width1 - width2) >= MonospaceComparisonThreshold)
+					{
+						using var textFormatter = TextFormatter.Create(TextFormattingMode.Display);
 
-					var textLine = textFormatter.FormatLine(
-						textSource,
-						0,
-						maxParagraphWidth,
-						paragraphProperties,
-						null);
+						var textSource = new ColumnTextSource(_view.FormattedLineSource.DefaultTextProperties);
 
-					width = textLine.WidthIncludingTrailingWhitespace /
-						(double)DefaultSettings.Instance.ProportionalColumnMeasurementStringLength;
+						var paragraphProperties = new ColumnParagraphProperties(
+							_view.FormattedLineSource.DefaultTextProperties);
+
+						var maxParagraphWidth = textFormatter.FormatMinMaxParagraphWidth(
+							textSource,
+							0,
+							paragraphProperties).MaxWidth;
+
+						using var textLine = textFormatter.FormatLine(
+							textSource,
+							0,
+							maxParagraphWidth,
+							paragraphProperties,
+							null);
+
+						width = textLine.WidthIncludingTrailingWhitespace /
+							(double)settings.ProportionalColumnMeasurementStringLength;
+					}
 				}
 			}
 

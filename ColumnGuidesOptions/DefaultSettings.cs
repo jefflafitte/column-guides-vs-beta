@@ -15,6 +15,7 @@
 using Microsoft.VisualStudio.Shell;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Windows.Media;
 
@@ -23,25 +24,19 @@ namespace ColumnGuidesOptions
 	public sealed class DefaultSettings
 	{
 		private const string FactoryDefaultFileTypes = "*.*";
+
 		private const int FactoryDefaultGuideColumn = 80;
+
 		private const int FactoryDefaultGuideWidth = 1;
 
 		private static readonly Color FactoryDefaultGuideColor = Colors.Gray;
 
-		private static DefaultSettings _instance;
+		private static readonly int[] FactoryDefaultPredefinedGuideWidths = [1, 2, 3];
 
-		private int[] _predefinedGuideWidths = [1, 2, 3];
-
-		private int _defaultPredefinedGuideWidthIndex = 0;
-
-		private DoubleCollection[] _predefinedGuideDashes =
+		private static readonly DoubleCollection[] FactoryDefaultPredefinedGuideDashes =
 			[[], [1, 1], [1, 2], [1, 4], [2, 1], [2, 2], [2, 4], [4, 2], [4, 4], [4, 8]];
 
-		private int _defaultPredefinedGuideDashesIndex = 0;
-
-		public static DefaultSettings Instance => _instance ??= (InitialzeFromSettings() ?? new());
-
-		public Options InitialOptions { get; set; } = new Options
+		private static readonly Options FactoryDefaultInitialOptions = new()
 		{
 			ShowGuides = true,
 			StickToPage = true,
@@ -60,81 +55,83 @@ namespace ColumnGuidesOptions
 			}]
 		};
 
-		public int MaxAssociationCount { get; set; } = 64;
+		private static DefaultSettings _instance;
 
-		public bool NewAssociationEnabled { get; set; } = true;
+		public static DefaultSettings Instance => _instance ??= InitializeFromSettings() ?? new();
 
-		public int MaxAssociationFileTypesLength { get; set; } = 64;
+		public Options InitialOptions { get; init; } = FactoryDefaultInitialOptions.Clone();
 
-		public string NewAssociationFileTypes { get; set; } = FactoryDefaultFileTypes;
+		public int MaxAssociationCount { get; init; } = 64;
 
-		public bool NewAssociationAddGuide {  get; set; } = true;
+		public bool NewAssociationEnabled { get; init; } = true;
 
-		public int MaxAssociationGuideCount { get; set; } = 64;
+		public int MaxAssociationFileTypesLength { get; init; } = 64;
 
-		public bool NewGuideVisible { get; set; } = true;
+		public string NewAssociationFileTypes { get; init; } = FactoryDefaultFileTypes;
 
-		public int MaxGuideColumn { get; set; } = 999;
+		public bool NewAssociationAddGuide { get; init; } = true;
 
-		public int NewGuideColumn { get; set; } = FactoryDefaultGuideColumn;
+		public int MaxAssociationGuideCount { get; init; } = 64;
 
-		public Color NewGuideColor { get; set; } = FactoryDefaultGuideColor;
+		public bool NewGuideVisible { get; init; } = true;
 
-		public int NewGuideWidth { get; set; } = FactoryDefaultGuideWidth;
+		public int MaxGuideColumn { get; init; } = 999;
 
-		public int[] PredefinedGuideWidths
+		public int NewGuideColumn { get; init; } = FactoryDefaultGuideColumn;
+
+		public Color NewGuideColor { get; init; } = FactoryDefaultGuideColor;
+
+		public int NewGuideWidth { get; init; } = FactoryDefaultGuideWidth;
+
+		public int[] PredefinedGuideWidths { get; init; } = FactoryDefaultPredefinedGuideWidths.ToArray();
+
+		public int DefaultPredefinedGuideWidthIndex { get; init; } = 0;
+
+		public DoubleCollection[] PredefinedGuideDashes { get; init; } = FactoryDefaultPredefinedGuideDashes.ToArray();
+
+		public int DefaultPredefinedGuideDashesIndex { get; init; } = 0;
+
+		public char MonospaceTestCharacter1 { get; init; } = 'M';
+
+		public char MonospaceTestCharacter2 { get; init; } = '.';
+
+		public char ProportionalColumnWidthCharacter { get; init; } = 'x';
+
+		public int ProportionalColumnMeasurementStringLength { get; init; } = 128;
+
+		[System.Text.Json.Serialization.JsonConstructor]
+		public DefaultSettings()
 		{
-			get => _predefinedGuideWidths;
+			InitialOptions ??= FactoryDefaultInitialOptions.Clone();
 
-			set
+			MaxAssociationCount = Math.Max(MaxAssociationCount, 0);
+			MaxAssociationFileTypesLength = Math.Max(MaxAssociationFileTypesLength, 0);
+			NewAssociationFileTypes ??= FactoryDefaultFileTypes;
+			MaxAssociationGuideCount = Math.Max(MaxAssociationGuideCount, 0);
+			MaxGuideColumn = Math.Max(MaxGuideColumn, 0);
+			NewGuideColumn = Math.Max(NewGuideColumn, 0);
+			NewGuideWidth = Math.Max(NewGuideWidth, 1);
+
+			if ((PredefinedGuideWidths?.Length ?? 0) == 0)
 			{
-				_predefinedGuideWidths = ((value?.Length ?? 0) > 0) ? value : _predefinedGuideWidths;
-
-				_defaultPredefinedGuideWidthIndex = Math.Min(
-					_defaultPredefinedGuideWidthIndex,
-					_predefinedGuideWidths.Length - 1);
+				PredefinedGuideWidths = FactoryDefaultPredefinedGuideWidths.ToArray();
 			}
-		}
 
-		public int DefaultPredefinedGuideWidthIndex
-		{
-			get => _defaultPredefinedGuideWidthIndex;
+			DefaultPredefinedGuideWidthIndex = Math.Min(
+				Math.Max(DefaultPredefinedGuideWidthIndex, 0),
+				PredefinedGuideWidths.Length - 1);
 
-			set => _defaultPredefinedGuideWidthIndex =
-				((value >= 0) && (value < _predefinedGuideWidths.Length)) ? value : 0;
-		}
-
-		public DoubleCollection[] PredefinedGuideDashes
-		{
-			get => _predefinedGuideDashes;
-
-			set
+			if ((PredefinedGuideDashes?.Length ?? 0) == 0)
 			{
-				_predefinedGuideDashes = ((value?.Length ?? 0) > 0) ? value : _predefinedGuideDashes;
-
-				_defaultPredefinedGuideDashesIndex = Math.Min(
-					_defaultPredefinedGuideDashesIndex,
-					_predefinedGuideDashes.Length - 1);
+				PredefinedGuideDashes = FactoryDefaultPredefinedGuideDashes.ToArray();
 			}
+
+			DefaultPredefinedGuideDashesIndex = Math.Min(
+				Math.Max(DefaultPredefinedGuideDashesIndex, 0),
+				PredefinedGuideDashes.Length - 1);
 		}
 
-		public int DefaultPredefinedGuideDashesIndex
-		{
-			get => _defaultPredefinedGuideDashesIndex;
-
-			set => _defaultPredefinedGuideDashesIndex =
-				((value >= 0) && (value < _predefinedGuideDashes.Length)) ? value : 0;
-		}
-
-		public char MonospaceTestCharacter1 { get; set; } = 'M';
-
-		public char MonospaceTestCharacter2 { get; set; } = '.';
-
-		public char ProportionalColumnWidthCharacter { get; set; } = 'x';
-
-		public int ProportionalColumnMeasurementStringLength { get; set; } = 128;
-
-		private static DefaultSettings InitialzeFromSettings()
+		private static DefaultSettings InitializeFromSettings()
 		{
 			DefaultSettings defaultSettings = null;
 

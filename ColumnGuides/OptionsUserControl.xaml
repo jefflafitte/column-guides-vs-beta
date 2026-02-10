@@ -111,7 +111,7 @@
                                 <Style TargetType="Grid">
                                     <Setter Property="IsEnabled" Value="True"/>
                                     <Style.Triggers>
-                                        <!-- Disable file types properties when no file types is selected. -->
+                                        <!-- Disable file types properties when no file types are selected. -->
                                         <DataTrigger Binding="{Binding SelectedAssociationVm}" Value="{x:Null}">
                                             <Setter Property="IsEnabled" Value="False" d:Value="True"/>
                                         </DataTrigger>
@@ -189,7 +189,7 @@
                 <Style TargetType="GroupBox">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedAssociationVm}" Value="{x:Null}">
-                            <!-- Disable guides group when no file types is selected. -->
+                            <!-- Disable guides group when no file types are selected. -->
                             <Setter Property="IsEnabled" Value="False" d:Value="True"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -286,7 +286,7 @@
                         <Style TargetType="Grid">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding SelectedGuideVm}" Value="{x:Null}">
-                                    <!-- Disable guides group when no file types is selected. -->
+                                    <!-- Disable guides group when no file types are selected. -->
                                     <Setter Property="IsEnabled" Value="False" d:Value="True"/>
                                 </DataTrigger>
                             </Style.Triggers>

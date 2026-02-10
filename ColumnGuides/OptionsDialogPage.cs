@@ -26,7 +26,7 @@ namespace ColumnGuides
 	internal sealed class OptionsDialogPage : DialogPageBase
 	{
 		private IOptionsService _optionsService;
-		private IOptionsViewModelService _optionsViewModeService;
+		private IOptionsViewModelService _optionsViewModelService;
 		private OptionsUserControl _userControl;
 
 		private IOptionsService OptionsService =>
@@ -34,7 +34,7 @@ namespace ColumnGuides
 				typeof(SComponentModel))).GetService<IOptionsService>();
 
 		private IOptionsViewModelService OptionsViewModelService =>
-			_optionsViewModeService ??= ((IComponentModel)GetService(
+			_optionsViewModelService ??= ((IComponentModel)GetService(
 				typeof(SComponentModel))).GetService<IOptionsViewModelService>();
 
 		private OptionsUserControl UserControl => _userControl ??= new();
