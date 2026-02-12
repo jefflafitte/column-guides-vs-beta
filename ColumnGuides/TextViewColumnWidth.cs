@@ -80,7 +80,7 @@ namespace ColumnGuides
 		private readonly IClassificationFormatMap _formatMap;
 		private double? _width = null;
 
-		public double Width => _width ??= CalculateWidth() ?? 0;
+		public double Width => (_width ??= CalculateWidth()) ?? 0;
 
 		public TextViewColumnWidth(IWpfTextView view, IClassificationFormatMap formatMap)
 		{

@@ -45,7 +45,7 @@
 
                     <!-- File Types List                       -->
                     <!-- Height is bound to guides list height.-->
-                    <ListBox Grid.Row="0" Height="{Binding ElementName=guidesListView, Path=ActualHeight, Mode=OneWay}" ItemsSource="{Binding AssociationVms}" d:ItemsSource="{d:SampleData ItemCount=5}" SelectedItem="{Binding SelectedAssociationVm}" SelectionChanged="List_SelectionChanged">
+                    <ListBox Grid.Row="0" Height="{Binding ElementName=guidesListView, Path=ActualHeight, Mode=OneWay}" ItemsSource="{Binding AssociationVms}" d:ItemsSource="{d:SampleData ItemCount=5}" SelectedItem="{Binding SelectedAssociationVm}">
                         <ListBox.Style>
                             <Style TargetType="ListBox">
                                 <Setter Property="IsEnabled" Value="True"/>
@@ -126,7 +126,7 @@
 
                             <!-- File Types -->
                             <Label Content="File types:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <TextBox DataObject.Pasting="FileTypes_Pasting" Grid.Column="2" LostFocus="TextBox_LostFocus" MaxLength="{Binding Source={x:Static ColumnGuidesOptions:DefaultSettings.Instance}, Path=MaxAssociationFileTypesLength, Mode=OneTime}" PreviewTextInput="FileTypes_PreviewTextInput" Text="{Binding SelectedAssociationVm.FileTypes}" d:Text="*.*" TextWrapping="NoWrap" ToolTip="Use wildcard patterns separated by semicolons." VerticalAlignment="Center"/>
+                            <TextBox DataObject.Pasting="FileTypes_Pasting" Grid.Column="2" MaxLength="{Binding Source={x:Static ColumnGuidesOptions:DefaultSettings.Instance}, Path=MaxAssociationFileTypesLength}" PreviewTextInput="FileTypes_PreviewTextInput" Text="{Binding SelectedAssociationVm.FileTypes}" d:Text="*.*" TextWrapping="NoWrap" ToolTip="Use wildcard patterns separated by semicolons." VerticalAlignment="Center"/>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -170,7 +170,7 @@
                     <CheckBox x:Name="sharpGuidesCheckBox" Content="Sharp guides" Grid.Row="5" HorizontalAlignment="Left" IsChecked="{Binding SnapToPixels}" VerticalAlignment="Top">
                         <CheckBox.Style>
                             <Style TargetType="CheckBox">
-                                <Setter Property="ToolTip" Value="Select to make guides snap to screen pixels and mimimize anti-aliasing visual artifacts."/>
+                                <Setter Property="ToolTip" Value="Select to make guides snap to screen pixels and minimize anti-aliasing visual artifacts."/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ElementName=sharpGuidesCheckBox, Path=IsChecked}" Value="True">
                                         <Setter Property="ToolTip" Value="Clear to disable snapping to screen pixels. (May cause anti-aliasing visual artifacts.)"/>
@@ -205,7 +205,7 @@
                 </Grid.RowDefinitions>
 
                 <!-- Guides List -->
-                <ListView x:Name="guidesListView" Grid.Row="0" ItemsSource="{Binding SelectedAssociationVm.GuideVms}" d:ItemsSource="{d:SampleData ItemCount=4}" SelectedItem="{Binding SelectedGuideVm}" SelectionChanged="List_SelectionChanged" SelectionMode="Single">
+                <ListView x:Name="guidesListView" Grid.Row="0" ItemsSource="{Binding SelectedAssociationVm.GuideVms}" d:ItemsSource="{d:SampleData ItemCount=4}" SelectedItem="{Binding SelectedGuideVm}" SelectionMode="Single">
                     <ListView.View>
                         <GridView>
                             <GridView.ColumnHeaderContainerStyle>
@@ -313,7 +313,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Label Content="Column:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox DataObject.Pasting="Column_Pasting" Grid.Column="2" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Column_PreviewTextInput" Text="{Binding SelectedGuideVm.Column}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                        <TextBox DataObject.Pasting="Column_Pasting" Grid.Column="2" HorizontalAlignment="Left" MaxLength="3" PreviewTextInput="Column_PreviewTextInput" Text="{Binding SelectedGuideVm.Column}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
                     </Grid>
 
                     <!-- Color -->
@@ -335,9 +335,9 @@
                                 <ColumnDefinition Width="12"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="0" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Red}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
-                            <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="2" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Green}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
-                            <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="4" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Blue}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                            <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="0" HorizontalAlignment="Left" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Red}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                            <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="2" HorizontalAlignment="Left" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Green}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                            <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="4" HorizontalAlignment="Left" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Blue}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
                             <Button Background="White" Command="{Binding ChooseColorCommand}" Grid.Column="6" Height="19" Width="19">
                                 <Button.Content>
                                     <Rectangle Height="16" SnapsToDevicePixels="True" Width="16">
@@ -381,7 +381,7 @@
                             <ColumnDefinition Width="86"/>
                         </Grid.ColumnDefinitions>
                         <Label Content="Opacity:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="2" HorizontalAlignment="Left" LostFocus="TextBox_LostFocus" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Alpha}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
+                        <TextBox DataObject.Pasting="Color_Pasting" Grid.Column="2" HorizontalAlignment="Left" MaxLength="3" PreviewTextInput="Color_PreviewTextInput" Text="{Binding SelectedGuideVm.Alpha}" d:Text="000" TextAlignment="Center" TextWrapping="NoWrap" VerticalAlignment="Center" Width="26"/>
                         <Slider d:Value="255" AutoToolTipPlacement="TopLeft" Grid.Column="4" HorizontalAlignment="Stretch" LargeChange="10" Maximum="255" Minimum="0" SmallChange="1" Value="{Binding SelectedGuideVm.Alpha}" VerticalAlignment="Center"/>
                     </Grid>
 

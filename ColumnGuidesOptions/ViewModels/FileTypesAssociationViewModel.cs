@@ -63,7 +63,15 @@ namespace ColumnGuidesOptions
 
 		partial void OnEnabledChanged(bool enabled) => Association.Enabled = enabled;
 
-		partial void OnFileTypesChanged(string fileTypes) => Association.FileTypes = fileTypes;
+		partial void OnFileTypesChanged(string? oldValue, string newValue)
+		{
+			if (string.IsNullOrEmpty(newValue) && !string.IsNullOrEmpty(oldValue))
+			{
+				FileTypes = oldValue;
+			}
+
+			Association.FileTypes = newValue;
+		}
 
 		private void OnGuidePropertyChanged(object sender, PropertyChangedEventArgs e) =>
 			GuidePropertyChanged?.Invoke(this, new(this, sender as GuideViewModel, e?.PropertyName));

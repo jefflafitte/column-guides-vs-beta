@@ -226,9 +226,11 @@ namespace ColumnGuides
 
 		private void OnFileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
 		{
-			if (e.FileActionType == FileActionTypes.DocumentRenamed)
+			var newFileName = System.IO.Path.GetFileName(_document.FilePath);
+
+			if (newFileName != _fileName)
 			{
-				_fileName = null;
+				_fileName = newFileName;
 
 				ResetLines();
 			}
